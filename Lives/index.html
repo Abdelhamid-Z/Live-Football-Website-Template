@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Channels</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #46265C;
+            color: white;
+            position: relative;
+            top: 100px;
+            font-family: itim;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: itim;
+        }
+
+        .search-input, .category-select {
+            padding: 10px;
+            font-size: 16px;
+            width: 60%;
+            max-width: 400px;
+            border-radius: 25px;
+            border: 2px solid #C83B4C;
+            outline: none;
+            background-color: #1c1f25;
+            color: #fff;
+            font-family: itim;
+        }
+
+        .search-input:focus, .category-select:focus {
+            border-color: #C83B4C;
+        }
+
+        .channel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive grid layout */
+            gap: 20px;
+            padding: 10px;
+            color: black;
+        }
+
+        .channel-item {
+            background-color: #dc4f5d;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            text-align: center;
+            color: black;
+        }
+
+        .channel-item:hover {
+            background-color: #C83B4C;
+            transform: scale(1.05);
+        }
+
+        .channel-image {
+            width: 90%; /* Image spans the full width of the box */
+            height: 200px; /* Fixed height for consistency */
+            object-fit: contain; /* Ensures the image isn't cropped */
+            margin-top: 10px;
+        }
+
+        .channel-info {
+            padding: 10px;
+            color: black;
+        }
+
+        .channel-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .channel-category {
+            font-size: 14px;
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #aaaaaa;
+            margin-top: 50px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Category Dropdown -->
+    <div class="search-container">
+        <select id="categorySelect" class="category-select">
+            <option value="">All Categories</option>
+            <option value="Sports">Sports</option>
+            <option value="Music">Music</option>
+            <option value="News">News</option>
+            <option value="Movies">Movies</option>
+            <option value="Kids">Kids</option>
+        </select>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search for channels...">
+    </div>
+
+    <!-- Channel List -->
+    <div class="channel-list" id="channelList">
+        <!-- Channels will be dynamically added here -->
+    </div>
+
+    <script>
+        window.onload = function () {
+            const channels = JSON.parse(localStorage.getItem('channels')) || [];
+            const channelList = document.getElementById('channelList');
+            const searchInput = document.getElementById('searchInput');
+            const categorySelect = document.getElementById('categorySelect');
+
+            // Function to render channels
+            function renderChannels(filteredChannels) {
+                channelList.innerHTML = ''; // Clear the list
+
+                if (filteredChannels.length === 0) {
+                    channelList.innerHTML = '<div class="no-results">No channels found.</div>';
+                    return;
+                }
+
+                filteredChannels.forEach((channel, index) => {
+                    const channelItem = document.createElement('div');
+                    channelItem.classList.add('channel-item');
+                    channelItem.onclick = function () {
+                        window.location.href = `channel.html?id=${index}`;
+                    };
+
+                    channelItem.innerHTML = `
+                        <img src="${channel.image}" alt="${channel.name}" class="channel-image">
+                        <div class="channel-info">
+                            <div class="channel-title">${channel.name}</div>
+                            <div class="channel-category">${channel.category}</div>
+                        </div>
+                    `;
+
+                    channelList.appendChild(channelItem);
+                });
+            }
+
+            // Function to filter channels based on search and category
+            function filterChannels() {
+                const searchQuery = searchInput.value.toLowerCase();
+                const selectedCategory = categorySelect.value.toLowerCase();
+
+                const filteredChannels = channels.filter(channel => {
+                    const matchesSearch = channel.name.toLowerCase().includes(searchQuery) ||
+                        channel.category.toLowerCase().includes(searchQuery);
+                    const matchesCategory = selectedCategory ? channel.category.toLowerCase() === selectedCategory : true;
+
+                    return matchesSearch && matchesCategory;
+                });
+
+                renderChannels(filteredChannels);
+            }
+
+            // Initial render of all channels
+            renderChannels(channels);
+
+            // Search functionality
+            searchInput.addEventListener('input', filterChannels);
+
+            // Category filter functionality
+            categorySelect.addEventListener('change', filterChannels);
+        };
+    </script>
+</body>
+</html>

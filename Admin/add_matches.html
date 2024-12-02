@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Matches</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        form input, form select, form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        form button {
+            background-color: #4caf50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #45a049;
+        }
+        .view-matches {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: block;
+        }
+        .view-matches:hover {
+            background-color: #0056b3;
+        }
+        .control-panel {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Match Details</h1>
+        <form id="matchForm">
+            <label for="team1Name">Team 1 Name</label>
+            <select id="team1Name" name="team1Name"></select>
+
+            <label for="team2Name">Team 2 Name</label>
+            <select id="team2Name" name="team2Name"></select>
+
+            <div class="flex" style="display: flex;">
+                <div class="hours" style="width: 50px;">
+                    <label for="team1Result" >Hour</label>
+                    <input type="number" id="team1Result" name="team1Result" placeholder="Enter Hour Of The Match" required>        
+                </div>
+                <div class="minutes" style="width: 50px;">
+                    <label for="team2Result">Minutes</label>
+                    <input type="number" id="team2Result" name="team2Result" placeholder="Enter Miute Of The Match" required>        
+                </div>
+            </div>
+
+
+            <label for="cup">Cup</label>
+            <select id="cup" name="cup"></select>
+            <input type="text" id="customCup" placeholder="Enter Custom Cup Name" style="display: none;">
+
+
+            <label for="channel">Channel</label>
+            <select id="channel" name="channel"></select>
+            <input type="text" id="customChannel" placeholder="Enter Custom Channel" style="display: none;">
+
+            <label for="date">Match Date</label>
+            <input type="date" id="date" name="date" required>
+
+            <button type="submit">Add Match</button>
+        </form>
+
+    </div>
+
+    <script>
+        const form = document.getElementById('matchForm');
+        const team1Name = document.getElementById('team1Name');
+        const team2Name = document.getElementById('team2Name');
+        const cup = document.getElementById('cup');
+        const customCup = document.getElementById('customCup');
+        const channel = document.getElementById('channel');
+        const customChannel = document.getElementById('customChannel');
+
+        // Load choices from localStorage
+        function loadChoices() {
+            const teams = JSON.parse(localStorage.getItem('teams')) || [
+                { name: "Spurs Tottenham", logo: "https://example.com/logo1.png" },
+                { name: "FC Barcelona", logo: "https://example.com/logo2.png" },
+                { name: "Real Madrid", logo: "https://example.com/logo3.png" }
+            ];
+            const cups = JSON.parse(localStorage.getItem('cups')) || [
+            "UEFA Champions League", 
+            "Premier League", 
+            "La Liga",
+            "Serie A",
+            "BundesLiga",
+            "World Cup",
+
+        ];
+            const channels = JSON.parse(localStorage.getItem('channels')) || [
+            "BeIN Sports HD 1",
+            "BeIN Sports HD 2",
+            "BeIN Sports HD 3",
+            "BeIN Sports HD 4",
+            "BeIN Sports HD 5",
+            "BeIN Sports HD 6",
+            "BeIN Sports Extra 1",
+            "BeIN Sports Extra 2",
+            "BeIN Sports Extra 3",
+            "BeIN Sports Extra 4",
+            "BeIN Sports Extra 6",
+            "SSC Sports HD 1",
+            "SSC Sports HD 2",
+            "SSC Sports HD 3",
+            "SSC Sports HD 4",
+            "SSC Sports HD 5",
+            ];
+
+            // Clear previous options
+            team1Name.innerHTML = '';
+            team2Name.innerHTML = '';
+            cup.innerHTML = '';
+            channel.innerHTML = '';
+
+            // Add teams to dropdowns with logos
+            teams.forEach(team => {
+                const option1 = document.createElement('option');
+                option1.value = team.name;
+                option1.text = team.name;
+                team1Name.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = team.name;
+                option2.text = team.name;
+                team2Name.appendChild(option2);
+            });
+
+            // Add cups to dropdown
+            cups.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c;
+                option.text = c;
+                cup.appendChild(option);
+            });
+
+            // Add channels to dropdown
+            channels.forEach(ch => {
+                const option = document.createElement('option');
+                option.value = ch;
+                option.text = ch;
+                channel.appendChild(option);
+            });
+        }
+
+        // Toggle custom input visibility
+        cup.addEventListener('change', () => {
+            customCup.style.display = cup.value === 'Custom' ? 'block' : 'none';
+        });
+        channel.addEventListener('change', () => {
+            customChannel.style.display = channel.value === 'Custom' ? 'block' : 'none';
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const teams = JSON.parse(localStorage.getItem('teams')) || [];
+            const team1 = teams.find(team => team.name === team1Name.value);
+            const team2 = teams.find(team => team.name === team2Name.value);
+
+            const match = {
+                team1Name: team1Name.value,
+                team1Logo: team1.logo,
+                team2Name: team2Name.value,
+                team2Logo: team2.logo,
+                team1Result: form.team1Result.value,
+                team2Result: form.team2Result.value,
+                cup: cup.value === 'Custom' ? customCup.value : cup.value,
+                channel: channel.value === 'Custom' ? customChannel.value : channel.value,
+                date: form.date.value,
+            };
+
+            // Save match to localStorage
+            const matches = JSON.parse(localStorage.getItem('matches')) || [];
+            matches.push(match);
+            localStorage.setItem('matches', JSON.stringify(matches));
+
+            form.reset();
+            alert('Match added successfully!');
+        });
+
+        // Initialize choices on page load
+        window.onload = loadChoices;
+    </script>
+</body>
+</html>

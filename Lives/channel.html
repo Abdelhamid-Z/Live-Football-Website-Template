@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPTV Channel Stream</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #46265C;
+            color: white;
+            position: relative;
+            top: 100px;
+            text-decoration: none;
+        }
+
+        table.channel-details {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+            background-color: #C83B4C;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table.channel-details td {
+            padding: 15px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .channel-logo {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 10px;
+        }
+
+        .channel-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .home-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-button:hover {
+            background-color: #ff3b3b;
+        }
+
+        .video-container {
+            background-color: #C83B4C;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid #C83B4C;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: itim;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Channel Detaisls Table -->
+    <table class="channel-details" style="font-family: itim;">
+        <tr>
+            <td><img id="channelImage" src="" alt="Channel Logo" class="channel-logo"></td>
+            <td><div id="channelName" class="channel-name"></div></td>
+        </tr>
+    </table>
+
+    <!-- Video Player Section -->
+    <div class="video-container">
+        <video id="video" controls autoplay>
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const channelId = urlParams.get('id');
+            const channels = JSON.parse(localStorage.getItem('channels')) || [];
+
+            // Check if the channelId is valid
+            if (channelId !== null && channelId >= 0 && channelId < channels.length) {
+                const channel = channels[channelId];
+
+                // Update channel info on the page
+                document.getElementById('channelName').textContent = channel.name;
+                document.getElementById('channelImage').src = channel.image;
+
+                // Load the stream
+                loadStream(channel.src);
+            } else {
+                document.body.innerHTML = '<p>Channel not found.</p>';
+            }
+        };
+
+        // Function to load the stream
+        function loadStream(videoSrc) {
+            const video = document.getElementById('video');
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', () => {
+                    video.play();
+                });
+            } else {
+                alert('Your browser does not support HLS streaming.');
+            }
+        }
+
+        // Redirect to Home Page
+        function goHome() {
+            window.location.href = "index.html"; // Replace "index.html" with your actual homepage URL
+        }
+    </script>
+
+</body>
+</html>

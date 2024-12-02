@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        h3 {
+            color: #555;
+        }
+        input[type="text"], input[type="url"], input[type="color"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li .team-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        li .team-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        li button {
+            background-color: #f44336;
+        }
+        li button:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Control Panel</h1>
+
+        <!-- Team Management -->
+        <h3>Manage Teams</h3>
+        <input type="text" id="newTeam" placeholder="Enter Team Name">
+        <input type="url" id="newLogo" placeholder="Enter Logo URL">
+        <button id="addTeamBtn">Add Team</button>
+
+        <ul id="teamList"></ul>
+
+        <script>
+            const teamList = document.getElementById('teamList');
+            const addTeamBtn = document.getElementById('addTeamBtn');
+            const newTeam = document.getElementById('newTeam');
+            const newLogo = document.getElementById('newLogo');
+
+            // Load and display teams from localStorage
+            function loadItems() {
+                const teams = JSON.parse(localStorage.getItem('teams')) || [];
+
+                teamList.innerHTML = '';
+
+                teams.forEach(team => {
+                    const li = document.createElement('li');
+                    
+                    const teamInfo = document.createElement('div');
+                    teamInfo.className = "team-info";
+
+                    const teamText = document.createElement('span');
+                    teamText.textContent = `${team.name}`;
+                    teamInfo.appendChild(teamText);
+
+                    const img = document.createElement('img');
+                    img.src = team.logo;
+                    img.alt = `${team.name} logo`;
+                    img.style.width = '40px';
+                    img.style.height = '40px';
+                    img.style.borderRadius = '4px';
+                    teamInfo.appendChild(img);
+
+                    li.appendChild(teamInfo);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.onclick = () => deleteItem(team.name);
+                    li.appendChild(deleteBtn);
+
+                    teamList.appendChild(li);
+                });
+            }
+
+            // Add a new team
+            addTeamBtn.onclick = () => {
+                const teamName = newTeam.value.trim();
+                const logoUrl = newLogo.value.trim();
+
+                if (teamName && logoUrl) {
+                    const teams = JSON.parse(localStorage.getItem('teams')) || [];
+                    const newTeamObject = { name: teamName, logo: logoUrl, };
+                    teams.push(newTeamObject);
+                    localStorage.setItem('teams', JSON.stringify(teams));
+                    loadItems();
+                    newTeam.value = '';
+                    newLogo.value = '';
+                } else {
+                    alert("Please enter all details: team name, logo URL, and select a color.");
+                }
+            };
+
+            // Delete a team
+            function deleteItem(teamName) {
+                const teams = JSON.parse(localStorage.getItem('teams')) || [];
+                const updatedTeams = teams.filter(team => team.name !== teamName);
+                localStorage.setItem('teams', JSON.stringify(updatedTeams));
+                loadItems();
+            }
+
+            // Initialize
+            loadItems();
+        </script>
+    </div>
+</body>
+</html>

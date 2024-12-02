@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            overflow: auto;
+            display: none; /* Initially hidden until login */
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar a {
+            padding: 15px;
+            text-decoration: none;
+            color: white;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            display: none; /* Initially hidden until login */
+        }
+
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .iframe-container {
+            height: calc(100vh - 40px); /* Adjusting for header height */
+        }
+
+        /* Login Form Styling */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+
+        .login-box {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box h2 {
+            margin: 0 0 20px;
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-box button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home" style="position: absolute;height: 30px;top: 0;display: flex;text-decoration: none;color: initial;width: fit-content;left: 10px;">
+        <img src="Admin/Channels/Icons/black home.png" style="height: 100%;margin-top: 8px;"></img>
+        &nbsp;
+        &nbsp;
+        <p style="font-family: itim;color: black;">Home</p>
+    </a>
+    <!-- Login Section -->
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username" style="width: 93%;">
+            <input type="password" id="password" placeholder="Password" style="width: 93%;">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <!-- Sidebar for Navigation -->
+    <div class="sidebar" id="sidebar">
+        <a href="index.html">Home Page</a>
+        <a href="Admin/Add Choices.html" target="content-frame">Add Choices</a>
+        <a href="Admin/add_matches.html" target="content-frame">Add Matches</a>
+        <a href="Admin/control_panel.html" target="content-frame">Control Panel</a>
+        <a href="Admin/view_matches.html" target="content-frame">View Matches</a>
+        <a href="Lives/admin.html" target="content-frame">Add Channels</a>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="main-content" id="main-content">
+        <div class="iframe-container">
+            <iframe name="content-frame" src="Admin/Add Choices.html"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Check credentials
+            if (username === "abdelhamid" && password === "abdelhamid") {
+                // Show sidebar and main content, hide login
+                document.getElementById("login-container").style.display = "none";
+                document.getElementById("sidebar").style.display = "flex";
+                document.getElementById("main-content").style.display = "block";
+            } else {
+                alert("Invalid username or password!");
+            }
+        }
+    </script>
+
+</body>
+</html>

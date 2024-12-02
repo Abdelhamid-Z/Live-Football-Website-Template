@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .channel-list {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .channel-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+
+        .channel-item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 20px;
+            border-radius: 4px;
+        }
+
+        .channel-item span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .edit-btn, .delete-btn {
+            margin-left: auto;
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .edit-btn:hover {
+            background-color: #218838;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .m3u-input-container {
+            margin-top: 20px;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        /* Add Delete All Button */
+        .delete-all-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-all-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add New Channel</h2>
+        <form id="addChannelForm">
+            <label for="channelName">Channel Name</label>
+            <input type="text" id="channelName" name="channelName" required>
+
+            <label for="m3uLink">M3U8 Link</label>
+            <input type="url" id="m3uLink" name="m3uLink" required>
+
+            <label for="channelImage">Channel Image URL</label>
+            <input type="url" id="channelImage" name="channelImage" required>
+
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" required>
+
+            <button type="submit">Add Channel</button>
+        </form>
+    </div>
+
+    <div class="m3u-input-container">
+        <h2>Paste M3U Data</h2>
+        <textarea id="m3uData" rows="10" placeholder="Paste your M3U data here"></textarea>
+        <button onclick="parseM3UData()">Preview Channels</button>
+    </div>
+
+    <div class="preview-container" id="previewContainer">
+        <h2>Preview Channels</h2>
+        <ul id="previewList"></ul>
+        <button onclick="addChannelsToList()">Add Channels to List</button>
+    </div>
+
+    <div class="channel-list">
+        <h2>Current Channels</h2>
+        <ul id="channelsList"></ul>
+        
+        <!-- Delete All Channels Button -->
+        <button class="delete-all-btn" onclick="deleteAllChannels()">Delete All Channels</button>
+    </div>
+
+    <script>
+        // Function to load and display current channels
+        function loadChannels() {
+            const channels = JSON.parse(localStorage.getItem('channels')) || [];
+            const channelsList = document.getElementById('channelsList');
+            channelsList.innerHTML = ''; // Clear the current list
+
+            channels.forEach((channel, index) => {
+                const li = document.createElement('li');
+                li.classList.add('channel-item');
+
+                // Channel info
+                li.innerHTML = `
+                    <img src="${channel.image}" alt="${channel.name}">
+                    <span>${channel.name} (${channel.category})</span>
+                    <button class="edit-btn" onclick="editChannel(${index})">Edit</button>
+                    <button class="delete-btn" onclick="deleteChannel(${index})">Delete</button>
+                `;
+
+                channelsList.appendChild(li);
+            });
+        }
+
+        // Function to handle editing a channel
+        function editChannel(index) {
+            const channels = JSON.parse(localStorage.getItem('channels')) || [];
+            const channel = channels[index];
+
+            // Populate the form with the channel data
+            document.getElementById('channelName').value = channel.name;
+            document.getElementById('m3uLink').value = channel.src;
+            document.getElementById('channelImage').value = channel.image;
+            document.getElementById('category').value = channel.category;
+
+            // Change the form's submit behavior to update the channel
+            const form = document.getElementById('addChannelForm');
+            form.onsubmit = function (event) {
+                event.preventDefault();
+
+                channel.name = document.getElementById('channelName').value;
+                channel.src = document.getElementById('m3uLink').value;
+                channel.image = document.getElementById('channelImage').value;
+                channel.category = document.getElementById('category').value;
+
+                // Save updated channels to localStorage
+                localStorage.setItem('channels', JSON.stringify(channels));
+                loadChannels(); // Refresh the channel list
+                form.reset(); // Reset the form
+                alert('Channel updated successfully!');
+            };
+        }
+
+        // Function to handle deleting a channel
+        function deleteChannel(index) {
+            const channels = JSON.parse(localStorage.getItem('channels')) || [];
+            channels.splice(index, 1); // Remove the channel from the array
+
+            // Save updated channels to localStorage
+            localStorage.setItem('channels', JSON.stringify(channels));
+            loadChannels(); // Refresh the channel list
+        }
+
+        // Function to delete all channels
+        function deleteAllChannels() {
+            const confirmation = confirm('Are you sure you want to delete all channels?');
+            if (confirmation) {
+                localStorage.removeItem('channels'); // Remove all channels from localStorage
+                loadChannels(); // Refresh the channel list
+                alert('All channels deleted!');
+            }
+        }
+
+        // Form submission to add a new channel
+        const form = document.getElementById('addChannelForm');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const channelName = document.getElementById('channelName').value;
+            const m3uLink = document.getElementById('m3uLink').value;
+            const channelImage = document.getElementById('channelImage').value;
+            const category = document.getElementById('category').value;
+
+            // Retrieve existing channels from localStorage
+            const channels = JSON.parse(localStorage.getItem('channels')) || [];
+
+            // Add the new channel to the list
+            channels.push({ name: channelName, src: m3uLink, image: channelImage, category: category });
+
+            // Save the updated channels back to localStorage
+            localStorage.setItem('channels', JSON.stringify(channels));
+
+            // Clear the form
+            form.reset();
+
+            alert('Channel added successfully!');
+            loadChannels(); // Refresh the channel list
+        });
+
+        // Parse the M3U data and show preview
+        function parseM3UData() {
+            const m3uText = document.getElementById('m3uData').value;
+            const regex = /#EXTINF:-1 tvg-id="([^"]+)" tvg-logo="([^"]+)" group-title="([^"]+)",([^,]+)\s+(.+?)(?=\n#EXTINF|$)/g;
+            let match;
+            const channels = [];
+
+            while ((match = regex.exec(m3uText)) !== null) {
+                channels.push({
+                    name: match[4],
+                    image: match[2],
+                    category: match[3],
+                    src: match[5]
+                });
+            }
+
+            // Display preview
+            const previewList = document.getElementById('previewList');
+            previewList.innerHTML = ''; // Clear any existing preview
+            channels.forEach(channel => {
+                const li = document.createElement('li');
+                li.classList.add('preview-item');
+                li.innerHTML = `
+                    <img src="${channel.image}" alt="${channel.name}">
+                    <span>${channel.name} (${channel.category})</span>
+                `;
+                previewList.appendChild(li);
+            });
+
+            // Store the preview channels in a global variable
+            window.previewChannels = channels;
+        }
+
+        // Add the previewed channels to the list
+        function addChannelsToList() {
+            const channels = window.previewChannels || [];
+            if (channels.length > 0) {
+                const storedChannels = JSON.parse(localStorage.getItem('channels')) || [];
+                channels.forEach(channel => {
+                    storedChannels.push(channel);
+                });
+                localStorage.setItem('channels', JSON.stringify(storedChannels));
+                alert(`${channels.length} channels added successfully!`);
+                loadChannels(); // Refresh the channel list
+            } else {
+                alert('No channels to add.');
+            }
+        }
+
+        // Initial load of channels when the page loads
+        window.onload = loadChannels;
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<header style="position: fixed; top: 0; height: 60px; background-color: #c83b4c; width: 100%; left: 0; display: flex; align-items: center; z-index: 1000;">
+    <!-- Logo and Hamburger -->
+    <div class="logo" style="margin-left: 8px; display: flex; align-items: center; width: 230px;">
+        <div class="hamburger" onclick="toggleOverlay()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <a href="">
+          <img src="" alt="Company Logo" style="width: auto; height: 40px; margin-left: 10px;">
+        </a>
+    </div>
+
+    <!-- Auth Buttons -->
+    <div class="auth" style="margin-left: auto; display: flex; align-items: center; margin-right: 10px;">
+      <a href="Admin Pannel.html" style="color: initial;text-decoration: initial;margin: 5px;background-color: white;padding-left: 15px;padding-right: 15px;padding-top: 10px;padding-bottom: 10px;border-radius: 10px;font-family: itim;">Admin Pannel</a>
+    </div>
+</header>
+
+<style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      max-height: 100%;
+      height: 100%;
+    }
+    .buttons {
+      position: fixed;
+      top: 60px;
+      left: 0px;
+      z-index: 1000;
+      width: 100%;
+      display: flex;
+    }
+    .buttons button {
+      width: 50%;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 0;
+      background-color: #C83B4C;
+      transition: background-color 0.3s;
+    }
+    .buttons button.active {
+      background-color: #46265C;
+      color: white;
+    }
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: none;
+    }
+    iframe.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="buttons" style="position: fixed;top: 60px;height: 40px;">
+    <button id="btn-page1" onclick="showPage('page1', 'btn-page1')" style="font-family: itim;" >Live Stream</button>
+    <button id="btn-page2" onclick="showPage('page2', 'btn-page2')" style="font-family: itim;">Today Matchs</button>
+  </div>
+
+  <!-- Make page1 active initially -->
+  <iframe id="page1" class="active" src="Lives/index.html"></iframe>
+  <iframe id="page2" src="admin/view_matches.html" style="width: 100%;position: absolute;"></iframe>
+
+  <script>
+    function showPage(pageId, buttonId) {
+      // Hide all iframes
+      document.querySelectorAll('iframe').forEach(iframe => {
+        iframe.classList.remove('active');
+      });
+
+      // Show the selected iframe
+      document.getElementById(pageId).classList.add('active');
+
+      // Remove active class from all buttons
+      document.querySelectorAll('.buttons button').forEach(button => {
+        button.classList.remove('active');
+      });
+
+      // Add active class to the selected button
+      document.getElementById(buttonId).classList.add('active');
+    }
+
+    // Set the initial active button
+    document.getElementById('btn-page1').classList.add('active');
+  </script>
+
+
+
+<style>
+  
+  
+    /* Hamburger Menu */
+    .hamburger {
+        cursor: pointer;
+        width: 30px;
+        height: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-right: 10px;
+    }
+
+    .hamburger div {
+        width: 100%;
+        height: 4px;
+        background-color: black;
+        border-radius: 5px;
+    }
+
+    /* Full-Screen Overlay */
+    .fullscreen-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.95);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .fullscreen-overlay.active {
+        display: flex;
+    }
+
+    .overlay-content {
+        text-align: center;
+        color: white;
+        font-family: 'Itim', cursive;
+    }
+
+    .overlay-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .overlay-item {
+        background-color: white;
+        color: black;
+        width: 300px;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: larger;
+    }
+
+    .overlay-item:hover {
+        background-color: #ddd;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    function toggleOverlay() {
+        const overlay = document.getElementById('fullscreenOverlay');
+        overlay.classList.toggle('active');
+    }
+
+    function hideOverlay() {
+        const overlay = document.getElementById('fullscreenOverlay');
+        overlay.classList.remove('active');
+    }
+</script>
+
+<!-- Fullscreen Overlay -->
+<div id="fullscreenOverlay" class="fullscreen-overlay">
+    <button onclick="hideOverlay()" style="position: fixed; top: 10px; right: 10px; color: black; font-size: xx-large; border-radius: 15px; width: 40px; background: white; border: none; cursor: pointer;text-align: center;">
+        X
+    </button>
+    <div class="overlay-content">
+        <a href="index.html" class="overlay-link">
+            <div class="overlay-item">
+                <p>Home Page</p>
+            </div>
+        </a>
+        <a href="#" class="overlay-link">
+            <div class="overlay-item">
+                <p>Visit Our Instagram Here</p>
+            </div>
+        </a>
+        <a href="#" class="overlay-link">
+            <div class="overlay-item">
+                <p>Visit Our Instagram Here</p>
+            </div>
+        </a>
+    </div>
+</div>
